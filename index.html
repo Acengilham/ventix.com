@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VENTIX - Event Management Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --ots-color: #7209b7; /* New color for OTS feature */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #e1e5eb;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .made-with-love {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .made-with-love a {
+            color: var(--warning);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .made-with-love a:hover {
+            text-decoration: underline;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            border: 1px solid #e1e5eb;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:nth-child(1):hover {
+            border-color: var(--primary);
+        }
+
+        .feature-card:nth-child(2):hover {
+            border-color: var(--success);
+        }
+
+        .feature-card:nth-child(3):hover {
+            border-color: var(--ots-color);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card:nth-child(1) .feature-icon {
+            color: var(--primary);
+        }
+
+        .feature-card:nth-child(2) .feature-icon {
+            color: var(--success);
+        }
+
+        .feature-card:nth-child(3) .feature-icon {
+            color: var(--ots-color);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .feature-desc {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .feature-card:nth-child(1) .btn {
+            background-color: var(--primary);
+        }
+
+        .feature-card:nth-child(2) .btn {
+            background-color: var(--success);
+        }
+
+        .feature-card:nth-child(3) .btn {
+            background-color: var(--ots-color);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .usage-guide {
+            margin-top: 60px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e1e5eb;
+            overflow: hidden;
+        }
+
+        .usage-header {
+            padding: 20px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .usage-title {
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .usage-title i {
+            font-size: 1.2rem;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .usage-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .usage-content.show {
+            padding: 30px;
+            max-height: 2000px;
+        }
+
+        .usage-section {
+            margin-bottom: 40px;
+        }
+
+        .usage-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .usage-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            cursor: pointer;
+            border-bottom: 1px solid #e1e5eb;
+        }
+
+        .usage-section-title {
+            font-size: 1.3rem;
+            margin: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .usage-section-title i {
+            font-size: 1.1rem;
+        }
+
+        .usage-section-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .usage-section-content.show {
+            padding: 20px 0;
+            max-height: 2000px;
+        }
+
+        .step {
+            display: flex;
+            margin-bottom: 15px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            position: absolute;
+            left: -5px;
+            top: 0;
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .step-content {
+            flex: 1;
+            padding-left: 25px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .step-desc {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            border-top: 1px solid #e1e5eb;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .dashboard-title {
+                font-size: 1.8rem;
+            }
+
+            .dashboard-subtitle {
+                font-size: 1rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .usage-title {
+                font-size: 1.3rem;
+            }
+
+            .usage-section-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="#" class="logo">
+                <i class="fas fa-calendar-alt"></i>
+                <span class="logo-text">VENTIX</span>
+            </a>
+            <div class="made-with-love">
+                Dibuat dengan ❤️ oleh <a href="https://www.instagram.com/ilhamnrllh_/" target="_blank">ilhamnrullh</a>
+            </div>
+        </header>
+
+        <main>
+            <h1 class="dashboard-title">Dashboard Sistem Event</h1>
+            <p class="dashboard-subtitle">
+                Kelola event Anda dengan mudah menggunakan sistem kami. Generate QR Code untuk peserta, pantau kehadiran, dan daftarkan peserta on the spot.
+            </p>
+
+            <div class="features">
+                <div class="feature-card" onclick="window.location.href='Qrbulk.html'">
+                    <div class="feature-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h2 class="feature-title">Generate QR Code</h2>
+                    <p class="feature-desc">
+                        Buat QR Code unik untuk event Anda yang bisa digunakan peserta untuk check-in. Mudah, cepat, dan efisien.
+                    </p>
+                    <button class="btn">Buka Generator</button>
+                </div>
+
+                <div class="feature-card" onclick="window.location.href='cekin.html'">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h2 class="feature-title">Event Check-in</h2>
+                    <p class="feature-desc">
+                        Pantau kehadiran peserta event secara real-time. Scan QR Code peserta dan dapatkan data kehadiran lengkap.
+                    </p>
+                    <button class="btn">Buka Check-in</button>
+                </div>
+
+                <div class="feature-card" onclick="window.location.href='OTS.html'">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h2 class="feature-title">Pendaftaran OTS</h2>
+                    <p class="feature-desc">
+                        Daftarkan peserta yang datang langsung (on the spot). Input data peserta dan langsung generate QR Code-nya.
+                    </p>
+                    <button class="btn">Buka Pendaftaran</button>
+                </div>
+            </div>
+
+            <div class="usage-guide">
+                <div class="usage-header" id="usageToggle">
+                    <h2 class="usage-title">
+                        <i class="fas fa-book-open"></i> Panduan Penggunaan
+                    </h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                
+                <div class="usage-content" id="usageContent">
+                    <div class="usage-section">
+                        <div class="usage-section-header" id="qrGuideToggle">
+                            <h3 class="usage-section-title">
+                                <i class="fas fa-qrcode"></i> Generate QR Code
+                            </h3>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        
+                        <div class="usage-section-content" id="qrGuideContent">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Masuk ke Menu Generator</h4>
+                                    <p class="step-desc">Klik tombol "Buka Generator" pada card Generate QR Code untuk masuk ke halaman generator.</p>
+                                </div>
+                            </div>
+                        
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Masukan Daftar Nama Peserta</h4>
+                                    <p class="step-desc">Anda dapat memasukan daftar nama peserta untuk generate QR Code massal.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Generate QR Code</h4>
+                                    <p class="step-desc">Klik tombol "Generate" untuk membuat QR Code. Tunggu beberapa saat hingga proses selesai.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Download QR CODE</h4>
+                                    <p class="step-desc">Setelah QR Code siap, Anda bisa mendownload semua hasil bulk dalam format PNG/JPG .</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="usage-section">
+                        <div class="usage-section-header" id="checkinGuideToggle">
+                            <h3 class="usage-section-title">
+                                <i class="fas fa-user-check"></i> Event Check-in
+                            </h3>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        
+                        <div class="usage-section-content" id="checkinGuideContent">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Akses Menu Check-in</h4>
+                                    <p class="step-desc">Klik tombol "Buka Check-in" pada card Event Check-in untuk masuk ke halaman check-in.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Pilih Event</h4>
+                                    <p class="step-desc">Pilih event yang ingin Anda pantau dari daftar event yang tersedia.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Scan QR Code Peserta</h4>
+                                    <p class="step-desc">Gunakan scanner kamera untuk scan QR Code yang dibawa peserta atau input manual kode unik peserta.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Verifikasi Data</h4>
+                                    <p class="step-desc">Sistem akan menampilkan data peserta. Verifikasi kebenaran data sebelum melanjutkan.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Selesaikan Check-in</h4>
+                                    <p class="step-desc">Klik tombol "Check-in" untuk mencatat kehadiran peserta. Data akan tersimpan otomatis.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Pantau Laporan</h4>
+                                    <p class="step-desc">Anda bisa melihat laporan kehadiran secara real-time di dashboard atau export data ke Excel.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="usage-section">
+                        <div class="usage-section-header" id="otsGuideToggle">
+                            <h3 class="usage-section-title">
+                                <i class="fas fa-user-plus"></i> Pendaftaran On The Spot
+                            </h3>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        
+                        <div class="usage-section-content" id="otsGuideContent">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Akses Menu Pendaftaran OTS</h4>
+                                    <p class="step-desc">Klik tombol "Buka Pendaftaran" pada card Pendaftaran OTS untuk masuk ke halaman pendaftaran.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Pilih Event</h4>
+                                    <p class="step-desc">Pilih event yang ingin Anda buka pendaftaran on the spot-nya.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Isi Formulir Pendaftaran</h4>
+                                    <p class="step-desc">Input data lengkap peserta yang datang langsung, termasuk nama, email, nomor telepon, dan informasi lainnya yang diperlukan.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Generate QR Code Instan</h4>
+                                    <p class="step-desc">Setelah data disimpan, sistem akan langsung generate QR Code untuk peserta tersebut.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Cetak atau Kirim QR Code</h4>
+                                    <p class="step-desc">Anda bisa langsung mencetak QR Code atau mengirimkannya via email kepada peserta.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h4 class="step-title">Peserta Dapat Langsung Check-in</h4>
+                                    <p class="step-desc">Peserta yang sudah terdaftar bisa langsung melakukan check-in menggunakan QR Code yang baru dibuat.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            &copy; 2025 VENTIX Dashboard. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        // Animasi saat hover tombol
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Redirect ke Instagram saat diklik logo
+        document.querySelector('.logo').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'https://www.instagram.com/ilhamnrllh_/';
+        });
+
+        // Toggle panduan utama
+        const usageToggle = document.getElementById('usageToggle');
+        const usageContent = document.getElementById('usageContent');
+        const usageIcon = usageToggle.querySelector('.toggle-icon');
+
+        usageToggle.addEventListener('click', function() {
+            usageContent.classList.toggle('show');
+            usageIcon.style.transform = usageContent.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        });
+
+        // Toggle panduan QR Code
+        const qrGuideToggle = document.getElementById('qrGuideToggle');
+        const qrGuideContent = document.getElementById('qrGuideContent');
+        const qrGuideIcon = qrGuideToggle.querySelector('.toggle-icon');
+
+        qrGuideToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            qrGuideContent.classList.toggle('show');
+            qrGuideIcon.style.transform = qrGuideContent.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        });
+
+        // Toggle panduan Check-in
+        const checkinGuideToggle = document.getElementById('checkinGuideToggle');
+        const checkinGuideContent = document.getElementById('checkinGuideContent');
+        const checkinGuideIcon = checkinGuideToggle.querySelector('.toggle-icon');
+
+        checkinGuideToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            checkinGuideContent.classList.toggle('show');
+            checkinGuideIcon.style.transform = checkinGuideContent.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        });
+
+        // Toggle panduan OTS
+        const otsGuideToggle = document.getElementById('otsGuideToggle');
+        const otsGuideContent = document.getElementById('otsGuideContent');
+        const otsGuideIcon = otsGuideToggle.querySelector('.toggle-icon');
+
+        otsGuideToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            otsGuideContent.classList.toggle('show');
+            otsGuideIcon.style.transform = otsGuideContent.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        });
+
+        // Buka panduan jika ada hash di URL
+        window.addEventListener('DOMContentLoaded', function() {
+            if(window.location.hash === '#panduan') {
+                usageContent.classList.add('show');
+                usageIcon.style.transform = 'rotate(180deg)';
+            }
+            
+            // Auto-scroll to feature if hash matches
+            if(window.location.hash === '#ots') {
+                document.querySelector('.feature-card:nth-child(3)').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    </script>
+</body>
+</html>
