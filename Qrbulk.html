@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator QR Code dengan Nama Custom</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            border: none;
+            transition: transform 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        #nameInput {
+            resize: vertical;
+            min-height: 150px;
+            font-family: monospace;
+        }
+
+        .qr-container {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .qr-container:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            transform: scale(1.02);
+        }
+
+        .qr-name {
+            margin-top: 15px;
+            font-weight: bold;
+            word-break: break-word;
+            color: #333;
+        }
+
+        .download-btn {
+            margin-top: 15px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .settings-panel {
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .settings-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header {
+                padding: 1.5rem 0;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1><i class="bi bi-qr-code-scan"></i> Generator QR Code</h1>
+                    <p class="lead">Buat QR code untuk banyak nama sekaligus dengan nama file sesuai keinginan</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg">
+                    <div class="card-body">
+                        <h3 class="card-title text-center mb-4"><i class="bi bi-input-cursor-text"></i> Masukkan Data</h3>
+                        
+                        <div class="mb-4">
+                            <label for="nameInput" class="form-label">Daftar Nama/Text (satu per baris):</label>
+                            <textarea class="form-control" id="nameInput" rows="10" placeholder="Contoh:
+Nama Peserta 1
+Nama Peserta 2
+Nomor Telepon
+Alamat Email
+Atau teks lainnya"></textarea>
+                        </div>
+                        
+                        <div class="settings-panel">
+                            <div class="settings-title"><i class="bi bi-gear"></i> Pengaturan QR Code</div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="qrSize" class="form-label">Ukuran QR Code:</label>
+                                    <select class="form-select" id="qrSize">
+                                        <option value="100">Kecil (100x100)</option>
+                                        <option value="200" selected>Sedang (200x200)</option>
+                                        <option value="300">Besar (300x300)</option>
+                                        <option value="400">Sangat Besar (400x400)</option>
+                                        <option value="500">Ekstra Besar (500x500)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="fileFormat" class="form-label">Format Nama File:</label>
+                                    <select class="form-select" id="fileFormat">
+                                        <option value="prefix" selected>QRCode_[nama].png</option>
+                                        <option value="suffix">[nama]_qrcode.png</option>
+                                    </select>
+                                    <input type="text" class="form-control mt-2 d-none" id="customFormat" placeholder="Contoh: peserta_[nama]_2023.png">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="qrColor" class="form-label">Warna QR Code:</label>
+                                    <input type="color" class="form-control form-control-color" id="qrColor" value="#000000" title="Pilih warna QR code">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="bgColor" class="form-label">Warna Latar Belakang:</label>
+                                    <input type="color" class="form-control form-control-color" id="bgColor" value="#ffffff" title="Pilih warna latar belakang">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button id="generateBtn" class="btn btn-primary btn-lg">
+                                <i class="bi bi-qr-code"></i> Generate QR Codes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="loading" class="loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Sedang membuat QR code...</p>
+                </div>
+                
+                <div id="results" class="row mt-4"></div>
+                
+                <div id="downloadAllContainer" class="text-center mt-4 mb-5 d-none">
+                    <button id="downloadAllBtn" class="btn btn-success btn-lg">
+                        <i class="bi bi-download"></i> Download Semua QR Code (ZIP)
+                    </button>
+                    <p class="text-muted mt-2">Semua QR code akan diunduh dalam satu file ZIP dengan nama sesuai input</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <p class="mb-0">&copy; <span id="currentYear"></span> Generator QR Code Custom. By acengilhmnrllh.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set tahun di footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // Elemen DOM
+            const nameInput = document.getElementById('nameInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const qrSize = document.getElementById('qrSize');
+            const qrColor = document.getElementById('qrColor');
+            const bgColor = document.getElementById('bgColor');
+            const fileFormat = document.getElementById('fileFormat');
+            const customFormat = document.getElementById('customFormat');
+            const results = document.getElementById('results');
+            const downloadAllContainer = document.getElementById('downloadAllContainer');
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            const loading = document.getElementById('loading');
+            
+            // Toggle custom format input
+            fileFormat.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customFormat.classList.remove('d-none');
+                    customFormat.focus();
+                } else {
+                    customFormat.classList.add('d-none');
+                }
+            });
+            
+            // Generate QR Codes
+            generateBtn.addEventListener('click', generateQRCodes);
+            
+            // Download All QR Codes
+            downloadAllBtn.addEventListener('click', downloadAllQRCodes);
+            
+            function generateQRCodes() {
+                const names = nameInput.value.split('\n').filter(name => name.trim() !== '');
+                
+                if (names.length === 0) {
+                    alert('Silakan masukkan setidaknya satu nama/teks!');
+                    nameInput.focus();
+                    return;
+                }
+                
+                // Tampilkan loading
+                loading.style.display = 'block';
+                results.innerHTML = '';
+                downloadAllContainer.classList.add('d-none');
+                
+                // Delay sedikit untuk memberi waktu rendering UI
+                setTimeout(() => {
+                    try {
+                        names.forEach((name, index) => {
+                            const col = document.createElement('div');
+                            col.className = 'col-md-4 col-sm-6 col-12 mb-4';
+                            
+                            const qrContainer = document.createElement('div');
+                            qrContainer.className = 'qr-container';
+                            qrContainer.id = `qr-container-${index}`;
+                            
+                            const qrCanvas = document.createElement('canvas');
+                            qrCanvas.id = `qr-canvas-${index}`;
+                            qrCanvas.className = 'img-fluid';
+                            
+                            const nameDisplay = document.createElement('div');
+                            nameDisplay.className = 'qr-name';
+                            nameDisplay.textContent = name;
+                            
+                            const downloadBtn = document.createElement('button');
+                            downloadBtn.className = 'btn btn-outline-primary download-btn';
+                            downloadBtn.innerHTML = '<i class="bi bi-download"></i> Download';
+                            downloadBtn.addEventListener('click', () => downloadQRCode(index, name));
+                            
+                            qrContainer.appendChild(qrCanvas);
+                            qrContainer.appendChild(nameDisplay);
+                            qrContainer.appendChild(downloadBtn);
+                            col.appendChild(qrContainer);
+                            results.appendChild(col);
+                            
+                            // Generate QR Code
+                            QRCode.toCanvas(qrCanvas, name, {
+                                width: parseInt(qrSize.value),
+                                color: {
+                                    dark: qrColor.value,
+                                    light: bgColor.value
+                                },
+                                margin: 2
+                            }, function(error) {
+                                if (error) console.error(error);
+                            });
+                        });
+                        
+                        if (names.length > 1) {
+                            downloadAllContainer.classList.remove('d-none');
+                        }
+                    } catch (error) {
+                        console.error('Error generating QR codes:', error);
+                        alert('Terjadi kesalahan saat membuat QR code. Silakan coba lagi.');
+                    } finally {
+                        loading.style.display = 'none';
+                    }
+                }, 100);
+            }
+            
+            function getFileName(name) {
+                const sanitizedName = name.replace(/[^a-zA-Z0-9\u00C0-\u017F\s_-]/g, '').replace(/\s+/g, '_');
+                let fileName = '';
+                
+                switch (fileFormat.value) {
+                    case 'prefix':
+                        fileName = `QRCode_${sanitizedName}.png`;
+                        break;
+                    case 'suffix':
+                        fileName = `${sanitizedName}_qrcode.png`;
+                        break;
+                    case 'custom':
+                        const customPattern = customFormat.value.trim();
+                        if (customPattern) {
+                            fileName = customPattern.replace(/\[nama\]/g, sanitizedName);
+                            if (!fileName.endsWith('.png')) {
+                                fileName += '.png';
+                            }
+                        } else {
+                            fileName = `${sanitizedName}.png`;
+                        }
+                        break;
+                    default:
+                        fileName = `${sanitizedName}.png`;
+                }
+                
+                return fileName;
+            }
+            
+            function downloadQRCode(index, name) {
+                const canvas = document.getElementById(`qr-canvas-${index}`);
+                const link = document.createElement('a');
+                link.download = getFileName(name);
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+            
+            function downloadAllQRCodes() {
+                const names = nameInput.value.split('\n').filter(name => name.trim() !== '');
+                const zip = new JSZip();
+                const imgFolder = zip.folder("qrcodes");
+                
+                // Tampilkan loading
+                const originalText = downloadAllBtn.innerHTML;
+                downloadAllBtn.disabled = true;
+                downloadAllBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Membuat ZIP...';
+                
+                setTimeout(() => {
+                    try {
+                        names.forEach((name, index) => {
+                            const canvas = document.getElementById(`qr-canvas-${index}`);
+                            const dataUrl = canvas.toDataURL('image/png').split(',')[1];
+                            const fileName = getFileName(name);
+                            imgFolder.file(fileName, dataUrl, {base64: true});
+                        });
+                        
+                        zip.generateAsync({type:"blob"}).then(function(content) {
+                            const zipFileName = `QR_Codes_${new Date().toISOString().slice(0, 10)}.zip`;
+                            saveAs(content, zipFileName);
+                        });
+                    } catch (error) {
+                        console.error('Error creating ZIP file:', error);
+                        alert('Terjadi kesalahan saat membuat file ZIP. Silakan coba lagi.');
+                    } finally {
+                        downloadAllBtn.disabled = false;
+                        downloadAllBtn.innerHTML = originalText;
+                    }
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
